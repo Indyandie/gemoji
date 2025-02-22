@@ -1,0 +1,52 @@
+#!/usr/bin/env zsh
+
+jq '[
+
+    .[] |
+
+    select(
+      .category as $category |
+      [
+          "Flags"
+      ] |
+      index($category)
+    ) |
+
+    select(
+      .emoji and .description and
+      (.description | type == "string") and
+      (.description | length > 0)
+    ) |
+  
+    {emoji: .emoji, name: .aliases[0]}
+  ]' \
+    ../emoji.json > flags.json
+
+# bat flags.json | jq ".[]" | jq -s '. | add' > flags-merged.json
+# bat flags-merged.json
+
+bat flags.json
+
+jq '[
+
+    .[] |
+
+    select(
+      .category as $category |
+      [
+          "Flags"
+      ] |
+      index($category)
+    ) |
+
+    select(
+      .emoji and .description and
+      (.description | type == "string") and
+      (.description | length > 0)
+    ) |
+  
+    [ .emoji, .aliases[0]]
+  ]' \
+    ../emoji.json >flags-array.json
+
+qsv json flags.json >flags.csv
