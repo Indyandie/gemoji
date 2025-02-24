@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+#
+# Grok helped
+
+# Input JSON
+json=$(cat 'emoji.json')
+
+# Process each object
+print "$json" | jq -c '.[]' | while read -r line; do
+    hexmoji=$(print "$line" | jq -r '.emoji' | uni identify -c -f '%(hex)')
+
+    # Add the new property using the CLI result
+    print "$line" | jq --arg result "$hexmoji" '. + {"hex": $result}'
+done | jq -s .
